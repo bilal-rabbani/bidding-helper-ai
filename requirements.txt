@@ -1,0 +1,4 @@
+# Libraries the app needs. More are added in later phases.
+pyyaml>=6.0
+pdfplumber>=0.11
+openpyxl>=3.1

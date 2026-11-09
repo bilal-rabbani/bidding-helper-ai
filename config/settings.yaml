@@ -1,0 +1,38 @@
+# Bidding Helper AI - one place for settings that may change over time.
+# Free-tier model names and limits change often. If a model stops working,
+# change its name here (or pick another in the app sidebar from phase 4).
+
+app:
+  name: "Bidding Helper AI"
+  version: "0.1.0"
+  max_pdf_pages: 300
+
+# Column names found in BOQ tables, in lower case. The parser (phase 1) matches
+# each table header against these lists, so new spellings are added here.
+boq_columns:
+  sr_no: ["sr. no", "sr no", "sr.", "sr", "serial no"]
+  item_no: ["s. no", "s.no.", "s.no", "s no", "ref no", "ref no.", "item no"]
+  description: ["description", "description of item", "item description"]
+  unit: ["unit"]
+  quantity: ["quantity", "qty", "qty."]
+  rate: ["rate", "rate (pkr)"]
+  amount: ["amount", "amount (pkr)"]
+
+rate_edit:
+  decimals: 2          # new rates are rounded to 2 decimals
+  keep_original: true  # Excel keeps an "Original Rate" column
+  preview_before_apply: true
+
+llm:
+  providers:
+    gemini:
+      models: ["gemini-2.5-flash", "gemini-2.5-flash-lite"]
+    groq:
+      models: ["llama-3.3-70b-versatile", "llama-3.1-8b-instant"]
+  rotate_on_rate_limit: true
+
+search:
+  embedding_model: "intfloat/multilingual-e5-small"  # free, runs on CPU, handles Urdu
+
+urdu:
+  excel_font: "Jameel Noori Nastaleeq"

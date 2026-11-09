@@ -67,9 +67,7 @@ def _set_height(ws, r, text):
 
 
 def _write_item(ws, r, row):
-    original = getattr(row, "original_rate", None)   # added in phase 3
-    if original is None:
-        original = row.rate
+    original = getattr(row, "original_rate", row.rate)   # blank stays blank
     note = "; ".join(f["message"] for f in row.flags)
     values = [row.sr_no, row.item_no, row.description, row.unit, row.quantity,
               original, row.rate, None, row.page, note]

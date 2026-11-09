@@ -75,6 +75,7 @@ class BOQRow:
     quantity: object = None   # float or None
     quantity_raw: str = ""
     rate: object = None
+    original_rate: object = None   # the rate printed in the tender; never changed
     amount: object = None
     section: str = ""
     flags: list = field(default_factory=list)
@@ -282,7 +283,8 @@ def _make_row(values, aligned, page, section):
         kind="item", page=page, sr_no=sr_no, item_no=values["item_no"],
         description=values["description"], unit=unit,
         quantity=nums["quantity"], quantity_raw=values["quantity"],
-        rate=nums["rate"], amount=nums["amount"], section=section, flags=flags,
+        rate=nums["rate"], original_rate=nums["rate"], amount=nums["amount"],
+        section=section, flags=flags,
     )
     return row, contaminated
 

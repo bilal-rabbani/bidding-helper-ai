@@ -3,3 +3,4 @@ pyyaml>=6.0
 pdfplumber>=0.11
 pillow<13
 openpyxl>=3.1
+requests>=2.31

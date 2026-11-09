@@ -1,6 +1,6 @@
 # Bidding Helper AI
 
-[![Tests](https://github.com/YOUR-USERNAME/bidding-helper-ai/actions/workflows/tests.yml/badge.svg)](https://github.com/YOUR-USERNAME/bidding-helper-ai/actions/workflows/tests.yml)
+[![Tests](https://github.com/bilal-rabbani/bidding-helper-ai/actions/workflows/tests.yml/badge.svg)](https://github.com/bilal-rabbani/bidding-helper-ai/actions/workflows/tests.yml)
 
 A free chatbot for contractors. Upload a tender PDF (EPADS format) and ask it to:
 

@@ -2,8 +2,8 @@
 
 | # | Phase | Status |
 |---|---|---|
-| 0 | Setup (repo, tests, settings, Colab notebook) | in progress |
-| 1 | PDF reader and BOQ parser | not started |
+| 0 | Setup (repo, tests, settings, Colab notebook) | done |
+| 1 | PDF reader, BOQ parser and parser evaluation | built, waiting for spot check of gold data |
 | 2 | Excel export | not started |
 | 3 | Row selection and rate editor | not started |
 | 4 | Streamlit app shell, API keys, key rotation | not started |

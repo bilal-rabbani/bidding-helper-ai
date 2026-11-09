@@ -1,0 +1,54 @@
+{
+ "tables": [
+  {
+   "name": "JIAP public address rooms",
+   "expected_sections": [],
+   "printed_total": 3736150.0,
+   "expected_verification": "cannot_verify",
+   "rows": [
+    {
+     "sr_no": 1,
+     "item_no": "1",
+     "unit": "P.Sft",
+     "quantity": 432.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 2,
+     "item_no": "2",
+     "unit": "P.Sft",
+     "quantity": 280.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 3,
+     "item_no": "3",
+     "unit": "P.Sft",
+     "quantity": 499.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 4,
+     "item_no": "4",
+     "unit": "P.Sft",
+     "quantity": 96.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 5,
+     "item_no": "5",
+     "unit": "P.Sft",
+     "quantity": 595.0,
+     "rate": null,
+     "amount": null
+    }
+   ]
+  }
+ ],
+ "status": "DRAFT - made by a second extraction method, to be spot-checked by a person",
+ "verified_by_person": false
+}

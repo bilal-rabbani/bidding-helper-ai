@@ -1,0 +1,354 @@
+{
+ "tables": [
+  {
+   "name": "NUST C3A offices",
+   "expected_sections": [
+    "A. CIVIL Works",
+    "B. ELECTRICAL Works",
+    "C. HVAC Works"
+   ],
+   "printed_total": 8847343.79,
+   "expected_verification": "match",
+   "rows": [
+    {
+     "sr_no": 3,
+     "item_no": "7-198.",
+     "unit": "Sqm",
+     "quantity": 50.0,
+     "rate": 1523.0,
+     "amount": 76150.0
+    },
+    {
+     "sr_no": 4,
+     "item_no": "7-66.",
+     "unit": "Sqm",
+     "quantity": 9.66,
+     "rate": 18486.0,
+     "amount": 178574.76
+    },
+    {
+     "sr_no": 5,
+     "item_no": "28-6.",
+     "unit": "Each",
+     "quantity": 4.0,
+     "rate": 3500.0,
+     "amount": 14000.0
+    },
+    {
+     "sr_no": 6,
+     "item_no": "8-7.",
+     "unit": "Each",
+     "quantity": 20.0,
+     "rate": 348.0,
+     "amount": 6960.0
+    },
+    {
+     "sr_no": 7,
+     "item_no": "8-206.",
+     "unit": "Each",
+     "quantity": 15.0,
+     "rate": 3663.0,
+     "amount": 54945.0
+    },
+    {
+     "sr_no": 8,
+     "item_no": "8-204.",
+     "unit": "Each",
+     "quantity": 10.0,
+     "rate": 2266.0,
+     "amount": 22660.0
+    },
+    {
+     "sr_no": 9,
+     "item_no": "7-68.",
+     "unit": "Sqm",
+     "quantity": 31.36,
+     "rate": 703.0,
+     "amount": 22046.08
+    },
+    {
+     "sr_no": 10,
+     "item_no": "15-4 + 15-5.",
+     "unit": "Sqm",
+     "quantity": 1720.0,
+     "rate": 203.0,
+     "amount": 349160.0
+    },
+    {
+     "sr_no": 11,
+     "item_no": "15-101.",
+     "unit": "Sqm",
+     "quantity": 300.0,
+     "rate": 176.0,
+     "amount": 52800.0
+    },
+    {
+     "sr_no": 12,
+     "item_no": "15-18 + 15-",
+     "unit": "Sqm",
+     "quantity": 100.0,
+     "rate": 475.0,
+     "amount": 47500.0
+    },
+    {
+     "sr_no": 13,
+     "item_no": "13-4.",
+     "unit": "Sqm",
+     "quantity": 80.0,
+     "rate": 795.0,
+     "amount": 63600.0
+    },
+    {
+     "sr_no": 14,
+     "item_no": "12-67.",
+     "unit": "Sqm",
+     "quantity": 320.0,
+     "rate": 3258.0,
+     "amount": 1042560.0
+    },
+    {
+     "sr_no": 15,
+     "item_no": "12-33.",
+     "unit": "Sqm",
+     "quantity": 219.4,
+     "rate": 333.0,
+     "amount": 73060.2
+    },
+    {
+     "sr_no": 16,
+     "item_no": "16-14.",
+     "unit": "Sqm",
+     "quantity": 16.0,
+     "rate": 5173.0,
+     "amount": 82768.0
+    },
+    {
+     "sr_no": 17,
+     "item_no": "7-136.",
+     "unit": "Sqm",
+     "quantity": 27.32,
+     "rate": 15000.0,
+     "amount": 409800.0
+    },
+    {
+     "sr_no": 18,
+     "item_no": "16-21.",
+     "unit": "Sqm",
+     "quantity": 185.0,
+     "rate": 4813.0,
+     "amount": 890405.0
+    },
+    {
+     "sr_no": 19,
+     "item_no": "16-19.",
+     "unit": "Sqm",
+     "quantity": 185.0,
+     "rate": 1900.0,
+     "amount": 351500.0
+    },
+    {
+     "sr_no": 20,
+     "item_no": "12-35.",
+     "unit": "Sqm",
+     "quantity": 50.0,
+     "rate": 3868.0,
+     "amount": 193400.0
+    },
+    {
+     "sr_no": 21,
+     "item_no": "MR BTS",
+     "unit": "Sqm",
+     "quantity": 157.68,
+     "rate": 10878.36,
+     "amount": 1715299.8048
+    },
+    {
+     "sr_no": 22,
+     "item_no": "MR BTS",
+     "unit": "Sqm",
+     "quantity": 72.0,
+     "rate": 282.45,
+     "amount": 20336.4
+    },
+    {
+     "sr_no": 23,
+     "item_no": "MR BTS",
+     "unit": "Sqm",
+     "quantity": 92.5,
+     "rate": 15473.0,
+     "amount": 1431252.5
+    },
+    {
+     "sr_no": 24,
+     "item_no": "MR BTS",
+     "unit": "Sqm",
+     "quantity": 45.0,
+     "rate": 2304.79,
+     "amount": 103715.55
+    },
+    {
+     "sr_no": 26,
+     "item_no": "24-12",
+     "unit": "point",
+     "quantity": 15.0,
+     "rate": 3072.0,
+     "amount": 46080.0
+    },
+    {
+     "sr_no": 27,
+     "item_no": "24-194",
+     "unit": "Each",
+     "quantity": 40.0,
+     "rate": 2144.0,
+     "amount": 85760.0
+    },
+    {
+     "sr_no": 28,
+     "item_no": "24-206",
+     "unit": "Each",
+     "quantity": 15.0,
+     "rate": 2341.0,
+     "amount": 35115.0
+    },
+    {
+     "sr_no": 29,
+     "item_no": "24-149",
+     "unit": "Point",
+     "quantity": 25.0,
+     "rate": 3088.0,
+     "amount": 77200.0
+    },
+    {
+     "sr_no": 30,
+     "item_no": "24-474",
+     "unit": "Each",
+     "quantity": 2.0,
+     "rate": 7379.0,
+     "amount": 14758.0
+    },
+    {
+     "sr_no": 31,
+     "item_no": "24-461",
+     "unit": "Each",
+     "quantity": 15.0,
+     "rate": 491.0,
+     "amount": 7365.0
+    },
+    {
+     "sr_no": 32,
+     "item_no": "24-466",
+     "unit": "Each",
+     "quantity": 6.0,
+     "rate": 11363.0,
+     "amount": 68178.0
+    },
+    {
+     "sr_no": 33,
+     "item_no": "24-792",
+     "unit": "Each",
+     "quantity": 30.0,
+     "rate": 1141.0,
+     "amount": 34230.0
+    },
+    {
+     "sr_no": 34,
+     "item_no": "24-793",
+     "unit": "Each",
+     "quantity": 10.0,
+     "rate": 1116.0,
+     "amount": 11160.0
+    },
+    {
+     "sr_no": 35,
+     "item_no": "24-804",
+     "unit": "Each",
+     "quantity": 6.0,
+     "rate": 1082.0,
+     "amount": 6492.0
+    },
+    {
+     "sr_no": 36,
+     "item_no": "24-827",
+     "unit": "Each",
+     "quantity": 6.0,
+     "rate": 1653.0,
+     "amount": 9918.0
+    },
+    {
+     "sr_no": 37,
+     "item_no": "24-611",
+     "unit": "meter",
+     "quantity": 180.0,
+     "rate": 136.0,
+     "amount": 24480.0
+    },
+    {
+     "sr_no": 38,
+     "item_no": "24-612",
+     "unit": "meter",
+     "quantity": 180.0,
+     "rate": 179.0,
+     "amount": 32220.0
+    },
+    {
+     "sr_no": 39,
+     "item_no": "24-366",
+     "unit": "Each",
+     "quantity": 8.0,
+     "rate": 1104.0,
+     "amount": 8832.0
+    },
+    {
+     "sr_no": 40,
+     "item_no": "BTS",
+     "unit": "Meter",
+     "quantity": 70.0,
+     "rate": 200.0,
+     "amount": 14000.0
+    },
+    {
+     "sr_no": 42,
+     "item_no": "MR",
+     "unit": "No.",
+     "quantity": 3.0,
+     "rate": 200000.0,
+     "amount": 600000.0
+    },
+    {
+     "sr_no": 43,
+     "item_no": "MR",
+     "unit": "No.",
+     "quantity": 12.0,
+     "rate": 5625.0,
+     "amount": 67500.0
+    },
+    {
+     "sr_no": 44,
+     "item_no": "MR",
+     "unit": "Rft",
+     "quantity": 250.0,
+     "rate": 1562.5,
+     "amount": 390625.0
+    },
+    {
+     "sr_no": 45,
+     "item_no": "MR",
+     "unit": "Rft",
+     "quantity": 250.0,
+     "rate": 168.75,
+     "amount": 42187.5
+    },
+    {
+     "sr_no": 46,
+     "item_no": "MR",
+     "unit": "Rft",
+     "quantity": 250.0,
+     "rate": 275.0,
+     "amount": 68750.0
+    }
+   ]
+  }
+ ],
+ "status": "DRAFT - made by a second extraction method, to be spot-checked by a person",
+ "verified_by_person": false
+}

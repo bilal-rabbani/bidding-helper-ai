@@ -1,0 +1,81 @@
+{
+ "totals": {
+  "gold": 79,
+  "found": 79,
+  "qty": 79,
+  "unit": 79,
+  "rate": 79,
+  "amount": 79,
+  "matched": 79,
+  "invented": 0,
+  "silent_wrong": 0,
+  "missing_unflagged": 0,
+  "verif_ok": 4,
+  "verif_n": 4,
+  "sec_ok": 1,
+  "sec_n": 1,
+  "flagged": 1
+ },
+ "per_tender": [
+  {
+   "tender": "tender_a_nust_boq",
+   "table": "NUST C3A offices",
+   "gold_rows": 42,
+   "found": 42,
+   "all_fields_correct": 42,
+   "needs_review": 1,
+   "verification": "match",
+   "printed_total": 8847343.79,
+   "sum_of_rows": 8847343.7948
+  },
+  {
+   "tender": "tender_b_jiap_boq",
+   "table": "JIAP public address rooms",
+   "gold_rows": 5,
+   "found": 5,
+   "all_fields_correct": 5,
+   "needs_review": 0,
+   "verification": "cannot_verify",
+   "printed_total": 3736150.0,
+   "sum_of_rows": null
+  },
+  {
+   "tender": "tender_c_pidcl_boq",
+   "table": "PIDCL main table",
+   "gold_rows": 16,
+   "found": 16,
+   "all_fields_correct": 16,
+   "needs_review": 0,
+   "verification": "cannot_verify",
+   "printed_total": 12627950.0,
+   "sum_of_rows": null
+  },
+  {
+   "tender": "tender_c_pidcl_boq",
+   "table": "PIDCL annexure BOQ",
+   "gold_rows": 16,
+   "found": 16,
+   "all_fields_correct": 16,
+   "needs_review": 0,
+   "verification": "cannot_verify",
+   "printed_total": null,
+   "sum_of_rows": null
+  }
+ ],
+ "probes": {
+  "Row description split across two pages is joined and flagged": true,
+  "Missing row number is reported": true,
+  "Unreadable quantity is flagged": true,
+  "Amount that differs from quantity x rate is flagged": true,
+  "Repeated header row inside a table is ignored": true,
+  "Page footer text mixed into a row is cleaned and flagged": true,
+  "Unit written inside the quantity cell ('432 Sft')": true,
+  "Other column spellings (S.No., Qty., Rate (PKR))": true,
+  "Total rows are not counted as items": true,
+  "Table continued on a page without a header row": true,
+  "Tables that are not a BOQ are ignored": true,
+  "Two jobs in one tender give two separate tables": true,
+  "Numbers like 1,234.50, Rs8,847,343.79 and '-' are read correctly": true
+ },
+ "all_pass": true
+}

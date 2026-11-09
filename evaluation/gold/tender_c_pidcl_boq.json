@@ -1,0 +1,278 @@
+{
+ "tables": [
+  {
+   "name": "PIDCL main table",
+   "expected_sections": [],
+   "printed_total": 12627950.0,
+   "expected_verification": "cannot_verify",
+   "rows": [
+    {
+     "sr_no": 1,
+     "item_no": "1",
+     "unit": "Nos.",
+     "quantity": 70.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 2,
+     "item_no": "2",
+     "unit": "Nos.",
+     "quantity": 3.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 3,
+     "item_no": "3",
+     "unit": "Nos.",
+     "quantity": 3.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 4,
+     "item_no": "4",
+     "unit": "Nos.",
+     "quantity": 70.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 5,
+     "item_no": "5",
+     "unit": "Job",
+     "quantity": 1.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 6,
+     "item_no": "6",
+     "unit": "Nos.",
+     "quantity": 2.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 7,
+     "item_no": "7",
+     "unit": "Nos.",
+     "quantity": 1.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 8,
+     "item_no": "8",
+     "unit": "Mtr",
+     "quantity": 200.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 9,
+     "item_no": "9",
+     "unit": "Mtr",
+     "quantity": 100.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 10,
+     "item_no": "10",
+     "unit": "Mtr",
+     "quantity": 150.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 11,
+     "item_no": "11",
+     "unit": "Mtr",
+     "quantity": 50.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 12,
+     "item_no": "12",
+     "unit": "Mtr",
+     "quantity": 50.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 13,
+     "item_no": "13",
+     "unit": "Ft.",
+     "quantity": 40.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 14,
+     "item_no": "14",
+     "unit": "Job",
+     "quantity": 1.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 15,
+     "item_no": "15",
+     "unit": "Nos.",
+     "quantity": 3.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 16,
+     "item_no": "16",
+     "unit": "Job",
+     "quantity": 1.0,
+     "rate": null,
+     "amount": null
+    }
+   ]
+  },
+  {
+   "name": "PIDCL annexure BOQ",
+   "expected_sections": [],
+   "printed_total": null,
+   "expected_verification": "cannot_verify",
+   "rows": [
+    {
+     "sr_no": 1,
+     "item_no": "",
+     "unit": "Nos.",
+     "quantity": 70.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 2,
+     "item_no": "",
+     "unit": "Nos.",
+     "quantity": 3.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 3,
+     "item_no": "",
+     "unit": "Nos.",
+     "quantity": 3.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 4,
+     "item_no": "",
+     "unit": "Nos.",
+     "quantity": 70.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 5,
+     "item_no": "",
+     "unit": "JOB",
+     "quantity": 1.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 6,
+     "item_no": "",
+     "unit": "Nos.",
+     "quantity": 2.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 7,
+     "item_no": "",
+     "unit": "Nos.",
+     "quantity": 1.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 8,
+     "item_no": "",
+     "unit": "Mtr",
+     "quantity": 200.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 9,
+     "item_no": "",
+     "unit": "Mtr",
+     "quantity": 100.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 10,
+     "item_no": "",
+     "unit": "Mtr",
+     "quantity": 150.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 11,
+     "item_no": "",
+     "unit": "Mtr",
+     "quantity": 50.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 12,
+     "item_no": "",
+     "unit": "Mtr",
+     "quantity": 50.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 13,
+     "item_no": "",
+     "unit": "Ft.",
+     "quantity": 40.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 14,
+     "item_no": "",
+     "unit": "Job",
+     "quantity": 1.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 15,
+     "item_no": "",
+     "unit": "Nos.",
+     "quantity": 3.0,
+     "rate": null,
+     "amount": null
+    },
+    {
+     "sr_no": 16,
+     "item_no": "",
+     "unit": "Job",
+     "quantity": 1.0,
+     "rate": null,
+     "amount": null
+    }
+   ]
+  }
+ ],
+ "status": "DRAFT - made by a second extraction method, to be spot-checked by a person",
+ "verified_by_person": false
+}

@@ -10,13 +10,21 @@ app:
 # Column names found in BOQ tables, in lower case. The parser (phase 1) matches
 # each table header against these lists, so new spellings are added here.
 boq_columns:
-  sr_no: ["sr. no", "sr no", "sr.", "sr", "serial no"]
-  item_no: ["s. no", "s.no.", "s.no", "s no", "ref no", "ref no.", "item no"]
+  # A column named "S.No." is the row number when the table has no "Sr. No"
+  # column; when both exist, the first one is the row number and the second
+  # becomes the item number.
+  sr_no: ["sr. no", "sr no", "sr.", "sr", "serial no", "s. no", "s.no.", "s.no", "s no"]
+  item_no: ["ref no", "ref no.", "item no", "s. no", "s.no.", "s.no", "s no"]
   description: ["description", "description of item", "item description"]
   unit: ["unit"]
   quantity: ["quantity", "qty", "qty."]
   rate: ["rate", "rate (pkr)"]
   amount: ["amount", "amount (pkr)"]
+
+boq_checks:
+  total_tolerance: 1.0        # rupees allowed between sum of rows and printed total
+  amount_tolerance_abs: 1.0   # rupees allowed between qty x rate and printed amount
+  amount_tolerance_rel: 0.001
 
 rate_edit:
   decimals: 2          # new rates are rounded to 2 decimals

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.pyc
+.pytest_cache/
+venv/
+.venv/
+
+# Secrets - NEVER commit these
+.env
+.streamlit/secrets.toml
+secrets.toml
+
+# Put your FULL tender PDFs here; this folder is never uploaded to GitHub
+private_tenders/
+
+# Files created while testing
+report.xml
+pytest.txt
+outputs/
+*.xlsx

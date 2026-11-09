@@ -4,7 +4,7 @@
 |---|---|---|
 | 0 | Setup (repo, tests, settings, Colab notebook) | done |
 | 1 | PDF reader, BOQ parser and parser evaluation | built, waiting for spot check of gold data |
-| 2 | Excel export | not started |
+| 2 | Excel export | done |
 | 3 | Row selection and rate editor | not started |
 | 4 | Streamlit app shell, API keys, key rotation | not started |
 | 5 | Chat and BOQ editing | not started |

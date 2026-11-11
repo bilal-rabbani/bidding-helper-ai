@@ -1,0 +1,132 @@
+[
+ {
+  "sentence": "increase the rates of items 3, 5 and 10 to 12 by 10%",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "reduce rate for item 7 by 5 percent",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "add Rs 50 to the rate of item 4",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "set the rate of item 9 to 2500",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "change the unit of row 14 to Sqm",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "quantity of item 6 should be 60",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "raise all aluminium items by 15%",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "increase rates for everything with the word door by 8%",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "increase the rates of the electrical works by 10%",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "decrease civil works rates by 3%",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "7-198 rate up by 20%",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "add 10% to items 3 to 5 and the door items",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "increase rates by ten percent for items 3 and 4",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "make the rate of item 5 Rs. 3,750.50",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "decrease the rate of items 3 to 5 by Rs 100",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "rename the description of item 3 to Dismantling of partitions",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "show me the items that need review",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "undo that",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "give me the excel",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "what forms do I need to submit?",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "when is the bid deadline?",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "translate the descriptions into urdu",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "how many items are there and what is the total?",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "what can you do?",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "increase the rates by 10%",
+  "status": "pass",
+  "detail": ""
+ },
+ {
+  "sentence": "delete item 5",
+  "status": "pass",
+  "detail": ""
+ }
+]

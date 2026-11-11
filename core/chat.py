@@ -12,6 +12,7 @@ from core.app_helpers import fmt, show_value
 from core.boq_edit import (FIELDS, NUMERIC_FIELDS, OPS, EditCommand, Selector, _norm_ref,
                            _split_list)
 from core.llm_router import LLMError
+from core.tender_qa import answer_question, looks_like_tender_question
 
 MAX_ROWS_SHOWN = 15
 
@@ -24,10 +25,10 @@ HELP_TEXT = """I can work on the BOQ of the tender you uploaded. Try:
 - **Excel:** "give me the Excel file" (or use the Download button at the top)
 
 Every edit is shown as a preview first. Nothing changes until you press **Apply**.
-Questions about the tender's requirements and forms, and Urdu translation, come in later phases."""
+You can also ask about the tender, for example 'what is the bid security?' or 'what forms do I need?'. Urdu translation comes in a later phase."""
 
-TENDER_Q_TEXT = ("Questions about the tender's requirements, forms, dates and eligibility are coming in "
-                 "phase 6. Right now I can edit and check the BOQ - type **help** to see how.")
+TENDER_Q_TEXT = ("To answer questions about the tender, I need the tender loaded and your API keys "
+                 "added in the sidebar. Type **help** to see what else I can do.")
 TRANSLATE_TEXT = "Urdu translation of the descriptions is coming in phase 8."
 DOWNLOAD_TEXT = "Use the **Download Excel** button at the top of the page. It includes all your edits."
 UNSUPPORTED_TEXT = ("I cannot do that yet. I can change the rate, quantity, unit or description of rows "
@@ -242,7 +243,14 @@ def _summary(table) -> ChatReply:
     return ChatReply("\n".join(lines), "info", intent="show_summary")
 
 
-def route(data, table, session) -> ChatReply:
+def _tender_reply(text, tender, router) -> ChatReply:
+    if tender is None or router is None:
+        return ChatReply(TENDER_Q_TEXT, "info", intent="tender_question")
+    a = answer_question(text, tender, router)
+    return ChatReply(a.text, "info", rows=a.rows, notes=a.notes, intent="tender_question")
+
+
+def route(data, table, session, tender=None, router=None, text="") -> ChatReply:
     """Do what the AI's JSON asks for (after checking it)."""
     intent = str(data.get("intent", "")).strip().lower()
     if intent == "edit":
@@ -286,7 +294,7 @@ def route(data, table, session) -> ChatReply:
     if intent == "help":
         return ChatReply(HELP_TEXT, "help", intent=intent)
     if intent == "tender_question":
-        return ChatReply(TENDER_Q_TEXT, "info", intent=intent)
+        return _tender_reply(text, tender, router)
     if intent == "translate":
         return ChatReply(TRANSLATE_TEXT, "info", intent=intent)
     if intent == "unsupported":
@@ -350,7 +358,7 @@ def reconcile(data, text, table) -> list:
     return notes
 
 
-def handle_message(text, table, session, router, history=None) -> ChatReply:
+def handle_message(text, table, session, router, history=None, tender=None) -> ChatReply:
     """One chat message in, one reply out. Never changes the table (Apply does that)."""
     t = (text or "").strip()
     if not t:
@@ -363,6 +371,8 @@ def handle_message(text, table, session, router, history=None) -> ChatReply:
         return ChatReply("I need your API keys for that. Add them in the sidebar and press "
                          "'Use and test keys'. 'undo' and 'help' work without keys, and so does "
                          "the 'Edit rates' tab.", "error")
+    if tender is not None and looks_like_tender_question(t):
+        return _tender_reply(t, tender, router)
     try:
         result = router.complete(build_prompt(t, table, history), system=INTENT_SYSTEM,
                                  temperature=0, max_tokens=2048)
@@ -375,7 +385,7 @@ def handle_message(text, table, session, router, history=None) -> ChatReply:
         notes = []
     else:
         notes = reconcile(data, t, table)
-        reply = route(data, table, session)
+        reply = route(data, table, session, tender, router, t)
     reply.notes = notes + list(getattr(result, "notes", []) or [])
     reply.model = f"{result.provider}/{result.model}"
     return reply

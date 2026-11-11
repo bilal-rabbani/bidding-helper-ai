@@ -174,6 +174,7 @@ class BOQTable:
 class ParseResult:
     tables: list = field(default_factory=list)
     warnings: list = field(default_factory=list)
+    page_texts: list = field(default_factory=list)      # the text of every PDF page
 
     def to_dict(self) -> dict:
         return {"warnings": self.warnings, "tables": [t.to_dict() for t in self.tables]}
@@ -471,6 +472,7 @@ def parse_boq(pdf_path) -> ParseResult:
             tables = page.extract_tables() if text.strip() else []
             pages.append({"page": i, "text": text, "tables": tables})
     result = parse_boq_tables(pages)
+    result.page_texts = [pg["text"] for pg in pages]
     if no_text:
         result.warnings.append(
             f"{len(no_text)} page(s) have no text layer (pages {no_text[:10]}"

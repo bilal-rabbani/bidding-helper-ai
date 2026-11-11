@@ -10,6 +10,8 @@ from core.app_helpers import (OPERATIONS, build_command, fmt, items_frame, revie
 from core.boq_edit import NUMERIC_FIELDS, EditSession, Selector, StalePlanError
 from core.boq_parser import parse_boq
 from core.chat_ui import chat_tab
+from core.tender_index import TenderIndex
+from core.tender_ui import tender_tab
 from core.excel_export import boq_excel_bytes
 from core.llm_router import LLMError, LLMRouter
 
@@ -87,6 +89,7 @@ def load_pdf(uploaded):
                 f.write(data)
                 path = f.name
             result = parse_boq(path)
+            tender = TenderIndex(result.page_texts)
     except Exception as e:                                    # show the problem instead of crashing
         st.error(f"Could not read this PDF: {e}")
         return
@@ -96,7 +99,7 @@ def load_pdf(uploaded):
     st.session_state.update(
         result=result, sessions=[EditSession(t) for t in result.tables], file_id=file_id,
         file_name=uploaded.name, pdf_bytes=data, plan=None, plan_table=None,
-        chat=[], chat_plan=None)
+        chat=[], chat_plan=None, tender=tender, key_facts=None)
 
 
 # ----------------------------------------------------------------- tabs
@@ -248,10 +251,11 @@ def main():
     st.download_button("Download Excel (.xlsx)", data=boq_excel_bytes(result, st.session_state.file_name),
                        file_name=f"{stem}_BOQ.xlsx", mime=XLSX)
 
-    t0, t1, t2, t3, t4 = st.tabs(["Chat", "BOQ", f"Needs review ({len(table.review_rows)})",
-                                  "Verification", "Edit rates"])
+    t0, t1, t2, t3, t4, t5 = st.tabs(["Chat", "BOQ", f"Needs review ({len(table.review_rows)})",
+                                      "Verification", "Edit rates", "Tender info"])
     with t0:
-        chat_tab(table, session, idx, st.session_state.router, st.session_state.file_name)
+        chat_tab(table, session, idx, st.session_state.router, st.session_state.file_name,
+                 st.session_state.get("tender"))
     with t1:
         boq_tab(table)
     with t2:
@@ -260,6 +264,9 @@ def main():
         verification_tab(table, session)
     with t4:
         edit_tab(table, session, idx)
+    with t5:
+        tender_tab(st.session_state.get("tender"), st.session_state.router,
+                   st.session_state.file_name)
 
 
 main()

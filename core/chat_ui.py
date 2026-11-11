@@ -10,7 +10,7 @@ def _add(role, content, **extra):
     st.session_state.chat.append({"role": role, "content": content, **extra})
 
 
-def chat_tab(table, session, idx, router, file_name=""):
+def chat_tab(table, session, idx, router, file_name="", tender=None):
     st.session_state.setdefault("chat", [])
     st.session_state.setdefault("chat_plan", None)
     if router is None:
@@ -51,7 +51,7 @@ def chat_tab(table, session, idx, router, file_name=""):
         history = list(st.session_state.chat)
         _add("user", text)
         with st.spinner("Thinking..."):
-            reply = handle_message(text, table, session, router, history)
+            reply = handle_message(text, table, session, router, history, tender)
         _add("assistant", reply.text, rows=reply.rows, notes=reply.notes)
         st.session_state.chat_plan = {"plan": reply.plan, "table": idx} if reply.plan else None
         st.rerun()

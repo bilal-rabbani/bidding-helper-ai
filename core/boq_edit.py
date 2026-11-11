@@ -70,23 +70,39 @@ def _split_list(value) -> list:
     return [str(x).strip() for x in value if str(x).strip()]
 
 
+def _words(text):
+    return set(re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).split())
+
+
+def _section_match(section, names) -> bool:
+    """A section matches when every word of the given name is in its label
+    ('electrical works' matches 'B. ELECTRICAL Works')."""
+    label = _words(section)
+    return bool(label) and any(_words(n) and _words(n) <= label for n in names)
+
+
 @dataclass
 class Selector:
     """Names the rows to change. A row is chosen if it matches ANY of the three parts."""
     sr_nos: list = field(default_factory=list)       # Sr. No. values
     item_nos: list = field(default_factory=list)     # Ref No. / Item No. values
     keywords: list = field(default_factory=list)     # words in the description
+    sections: list = field(default_factory=list)     # section names
     keywords_all: bool = False                       # True: description needs every keyword
 
     @classmethod
-    def from_spec(cls, numbers="", item_nos=None, keywords=None, keywords_all=False):
+    def from_spec(cls, numbers="", item_nos=None, keywords=None, keywords_all=False,
+                  sections=None):
         return cls(sr_nos=expand_numbers(numbers), item_nos=_split_list(item_nos),
-                   keywords=_split_list(keywords), keywords_all=keywords_all)
+                   keywords=_split_list(keywords), keywords_all=keywords_all,
+                   sections=_split_list(sections))
 
     def is_empty(self) -> bool:
-        return not (self.sr_nos or self.item_nos or self.keywords)
+        return not (self.sr_nos or self.item_nos or self.keywords or self.sections)
 
     def matches(self, row) -> bool:
+        if self.sections and _section_match(row.section, self.sections):
+            return True
         if row.sr_no is not None and row.sr_no in self.sr_nos:
             return True
         if self.item_nos and _norm_ref(row.item_no) in {_norm_ref(x) for x in self.item_nos}:
@@ -212,6 +228,9 @@ def plan_edit(table, command) -> EditPlan:
     for k in sel.keywords:
         if not any(_has_word(r.description, k) for _, r in items):
             plan.not_found.append(f"No item description contains '{k}'")
+    for name in sel.sections:
+        if not any(_section_match(r.section, [name]) for _, r in items):
+            plan.not_found.append(f"No section matches '{name}'")
 
     for i, r in items:
         if not sel.matches(r):

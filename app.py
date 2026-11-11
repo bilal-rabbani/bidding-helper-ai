@@ -9,6 +9,7 @@ from core.app_helpers import (OPERATIONS, build_command, fmt, items_frame, revie
                               show_value)
 from core.boq_edit import NUMERIC_FIELDS, EditSession, Selector, StalePlanError
 from core.boq_parser import parse_boq
+from core.chat_ui import chat_tab
 from core.excel_export import boq_excel_bytes
 from core.llm_router import LLMError, LLMRouter
 
@@ -67,8 +68,7 @@ def sidebar():
         if len(router.keys) > 1:
             router.primary = st.sidebar.radio("Try first", list(router.keys),
                                               format_func=str.title, key="primary_provider")
-    st.sidebar.caption("The chat comes in the next phase. For now you can read the BOQ, "
-                       "review it, edit rates and download the Excel file.")
+    st.sidebar.caption("Use the Chat tab to edit the BOQ in plain words. Keys are only needed for the chat.")
     return uploaded
 
 
@@ -93,7 +93,8 @@ def load_pdf(uploaded):
             Path(path).unlink(missing_ok=True)
     st.session_state.update(
         result=result, sessions=[EditSession(t) for t in result.tables], file_id=file_id,
-        file_name=uploaded.name, pdf_bytes=data, plan=None, plan_table=None)
+        file_name=uploaded.name, pdf_bytes=data, plan=None, plan_table=None,
+        chat=[], chat_plan=None)
 
 
 # ----------------------------------------------------------------- tabs
@@ -245,8 +246,10 @@ def main():
     st.download_button("Download Excel (.xlsx)", data=boq_excel_bytes(result, st.session_state.file_name),
                        file_name=f"{stem}_BOQ.xlsx", mime=XLSX)
 
-    t1, t2, t3, t4 = st.tabs(["BOQ", f"Needs review ({len(table.review_rows)})",
-                              "Verification", "Edit rates"])
+    t0, t1, t2, t3, t4 = st.tabs(["Chat", "BOQ", f"Needs review ({len(table.review_rows)})",
+                                  "Verification", "Edit rates"])
+    with t0:
+        chat_tab(table, session, idx, st.session_state.router, st.session_state.file_name)
     with t1:
         boq_tab(table)
     with t2:

@@ -7,7 +7,7 @@
 | 2 | Excel export | done |
 | 3 | Row selection and rate editor | not started |
 | 4 | Streamlit app shell, API keys, key rotation | done |
-| 5 | Chat and BOQ editing | not started |
+| 5 | Chat and BOQ editing | done |
 | 6 | Tender search (requirements, forms, dates) | not started |
 | 7 | OCR fallback | not started |
 | 8 | Urdu translation | not started |

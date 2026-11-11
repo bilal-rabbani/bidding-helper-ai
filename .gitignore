@@ -18,3 +18,5 @@ report.xml
 pytest.txt
 outputs/
 *.xlsx
+cloudflared
+*.log

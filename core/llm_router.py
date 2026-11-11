@@ -104,15 +104,27 @@ PROVIDERS = {
 }
 
 
+GROQ_PREFERRED = ("llama-3.3-70b", "gpt-oss-120b", "llama-3.1-70b", "qwen3-32b",
+                  "llama-4-maverick", "llama-4-scout", "gpt-oss-20b", "llama-3.1-8b")
+GROQ_AVOID = ("allam", "compound", "saba")      # not suited to short instruction tasks
+
+
 def pick_default_model(provider: str, models: list) -> str:
     """A sensible starting model from the list the provider returned."""
     if not models:
         return ""
     if provider == "groq":
-        if "llama-3.3-70b-versatile" in models:
-            return "llama-3.3-70b-versatile"
-        big = [m for m in models if "llama" in m and "70b" in m]
-        return big[0] if big else models[0]
+        for pattern in GROQ_PREFERRED:
+            for m in models:
+                if pattern in m:
+                    return m
+        usable = [m for m in models if not any(x in m for x in GROQ_AVOID)] or models
+
+        def size(m):
+            found = re.findall(r"(\d+(?:\.\d+)?)b", m)
+            return float(found[0]) if found else 0.0
+
+        return max(usable, key=size)
 
     def version(m):
         found = re.search(r"gemini-(\d+(?:\.\d+)?)", m)
@@ -361,9 +373,9 @@ class LLMRouter:
                             notes.append(f"Answered by {st.label} using {model}.")
                         return LLMResult(text, provider, model, st.label, notes)
                     if kind == "bad_model":
-                        raise LLMRequestError(
-                            f"The model '{model}' was not found for {PROVIDERS[provider]['label']}. "
-                            "Pick another model.")
+                        notes.append(f"The model '{model}' was not found for "
+                                     f"{PROVIDERS[provider]['label']}; trying the next provider.")
+                        break
                     if kind == "bad_request":
                         raise LLMRequestError(msg)
                     notes.append(self._apply_failure(st, kind, msg, cooldown))

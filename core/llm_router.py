@@ -1,7 +1,9 @@
-"""Talks to Gemini and Groq with several free API keys and switches keys when one runs out.
+"""Talks to Gemini and Groq with several free API keys.
 
-Plain HTTPS calls, no LLM library. Keys are never printed or saved: they live
-only inside the router object, and error texts have them blanked out.
+It switches to the next key when one runs out, and to the next model when a model is
+retired or its free daily limit is used up. Plain HTTPS calls, no LLM library.
+Keys are never printed or saved: they live only inside the router object, and error
+texts have them blanked out.
 """
 import re
 import time
@@ -9,10 +11,11 @@ from dataclasses import dataclass, field
 
 import requests
 
-TIMEOUT = 60
+TIMEOUT = 30
 DEFAULT_COOLDOWN = 60        # seconds a rate-limited key rests when the provider gives no hint
 TEMP_COOLDOWN = 20           # seconds after a temporary server problem
-PER_DAY_COOLDOWN = 3600      # when the limit looks like a daily one
+DAILY_REST = 6 * 3600        # how long a key is skipped for a model whose daily limit is used up
+MAX_MODEL_SWITCHES = 4
 USER_AGENT = "bidding-helper-ai/0.1"
 
 
@@ -21,7 +24,7 @@ class LLMError(Exception):
 
 
 class LLMRequestError(LLMError):
-    """The request itself is wrong (bad model name, too long, blocked). Another key will not help."""
+    """The request itself is wrong (too long, blocked). Another key will not help."""
 
 
 class AllKeysFailed(LLMError):
@@ -103,7 +106,6 @@ PROVIDERS = {
              "generate": _groq_generate, "text": _groq_text},
 }
 
-
 GROQ_PREFERRED = ("llama-3.3-70b", "gpt-oss-120b", "llama-3.1-70b", "qwen3-32b",
                   "llama-4-maverick", "llama-4-scout", "gpt-oss-20b", "llama-3.1-8b")
 GROQ_AVOID = ("allam", "compound", "saba")      # not suited to short instruction tasks
@@ -183,13 +185,13 @@ def _retry_after(headers, text):
 
 
 def _classify(status, text, headers):
-    """Returns (kind, cooldown seconds). kind: rate_limit | temporary | bad_key | bad_model | bad_request."""
+    """Returns (kind, seconds). kind: rate_limit | daily_limit | temporary | bad_key | bad_model | bad_request."""
     low = (text or "").lower()
     retry = _retry_after(headers, text)
     if status == 429 or (status == 403 and "quota" in low):
-        if retry is None:
-            retry = PER_DAY_COOLDOWN if ("perday" in low or "per day" in low) else DEFAULT_COOLDOWN
-        return "rate_limit", retry
+        if "perday" in low or "per day" in low or "daily" in low:
+            return "daily_limit", retry if retry is not None else DAILY_REST
+        return "rate_limit", retry if retry is not None else DEFAULT_COOLDOWN
     if status in (500, 502, 503, 504):
         return "temporary", retry or TEMP_COOLDOWN
     if status in (401, 403) or (status == 400 and ("api key not valid" in low or "api_key_invalid" in low)):
@@ -219,6 +221,7 @@ class KeyState:
     label: str = ""
     status: str = "untested"              # untested | ok | invalid
     cooldown_until: float = 0.0
+    exhausted: dict = field(default_factory=dict, repr=False)   # model -> when it may be tried again
 
 
 @dataclass
@@ -249,6 +252,7 @@ class LLMRouter:
         self.primary = primary
         self._cursor = {p: 0 for p in self.keys}
         self._model_cache = {}
+        self._bad_models = {}                 # provider -> models that were "not found"
 
     # ---- information for the screen
     def providers(self) -> list:
@@ -269,6 +273,12 @@ class LLMRouter:
     def _cooling(self, st) -> float:
         return st.cooldown_until - self.clock()
 
+    def _exhausted(self, st, model) -> bool:
+        return st.exhausted.get(model, 0.0) > self.clock()
+
+    def _model_usable(self, provider, model) -> bool:
+        return any(s.status != "invalid" and not self._exhausted(s, model) for s in self.keys[provider])
+
     # ---- sending one request with one key
     def _send(self, st, request):
         method, url, headers, body = request
@@ -278,15 +288,17 @@ class LLMRouter:
             return "temporary", None, f"network problem ({type(e).__name__})", TEMP_COOLDOWN
         if resp.status_code == 200:
             return "ok", resp, "", 0
-        kind, cooldown = _classify(resp.status_code, getattr(resp, "text", ""),
-                                   getattr(resp, "headers", {}))
-        return kind, resp, _error_message(resp, st.key), cooldown
+        kind, seconds = _classify(resp.status_code, getattr(resp, "text", ""),
+                                  getattr(resp, "headers", {}))
+        return kind, resp, _error_message(resp, st.key), seconds
 
     def _apply_failure(self, st, kind, msg, cooldown) -> str:
-        if kind in ("rate_limit", "temporary"):
+        if kind in ("rate_limit", "temporary", "daily_limit"):
             st.cooldown_until = self.clock() + cooldown
             if kind == "rate_limit":
                 return f"{st.label} hit its limit (resting about {int(cooldown)}s)"
+            if kind == "daily_limit":
+                return f"{st.label} used up its free daily limit"
             return f"{st.label} had a temporary problem: {msg}"
         if kind == "bad_key":
             st.status = "invalid"
@@ -316,6 +328,22 @@ class LLMRouter:
             self.models[provider] = pick_default_model(provider, self.list_models(provider))
         return self.models[provider]
 
+    def _switch_model(self, provider, current, notes) -> bool:
+        """Move to the next-best model of this provider. False when there is none left."""
+        try:
+            names = self.list_models(provider)
+        except AllKeysFailed:
+            return False
+        bad = self._bad_models.get(provider, set())
+        candidates = [m for m in names if m != current and m not in bad
+                      and self._model_usable(provider, m)]
+        if not candidates:
+            return False
+        new = pick_default_model(provider, candidates)
+        self.models[provider] = new
+        notes.append(f"Switching {PROVIDERS[provider]['label']} to the model {new}.")
+        return True
+
     # ---- check every key
     def test_keys(self) -> list:
         report = []
@@ -324,7 +352,7 @@ class LLMRouter:
                 kind, _, msg, cooldown = self._send(st, PROVIDERS[st.provider]["list"](st.key))
                 if kind == "ok":
                     st.status, text = "ok", "works"
-                elif kind == "rate_limit":
+                elif kind in ("rate_limit", "daily_limit"):
                     st.status = "ok"
                     st.cooldown_until = self.clock() + cooldown
                     text = "key is valid but is at its limit right now"
@@ -340,6 +368,46 @@ class LLMRouter:
                  if s.status != "invalid" and self._cooling(s) > 0]
         return min(waits) if waits else None
 
+    def _try_provider(self, provider, model, prompt, system, temperature, max_tokens, notes):
+        """Try every key of one provider with one model.
+        Returns an LLMResult, or "switch_model" (the model was changed, try again), or "done"."""
+        spec, label = PROVIDERS[provider], PROVIDERS[provider]["label"]
+        states = self.keys[provider]
+        if model in self._bad_models.get(provider, ()):
+            return "switch_model" if self._switch_model(provider, model, notes) else "done"
+        n = len(states)
+        for offset in range(n):
+            idx = (self._cursor[provider] + offset) % n
+            st = states[idx]
+            if st.status == "invalid" or self._cooling(st) > 0 or self._exhausted(st, model):
+                continue
+            request = spec["generate"](st.key, model, system, prompt, temperature, max_tokens)
+            kind, resp, msg, seconds = self._send(st, request)
+            if kind == "ok":
+                text = spec["text"](_json(resp))
+                if not text.strip():
+                    raise LLMRequestError("The model returned an empty answer (it may have been blocked).")
+                st.status = "ok"
+                self._cursor[provider] = (idx + 1) % n
+                if notes:
+                    notes.append(f"Answered by {st.label} using {model}.")
+                return LLMResult(text, provider, model, st.label, notes)
+            if kind == "bad_model":
+                notes.append(f"The model '{model}' was not found for {label}.")
+                self._bad_models.setdefault(provider, set()).add(model)
+                return "switch_model" if self._switch_model(provider, model, notes) else "done"
+            if kind == "bad_request":
+                raise LLMRequestError(msg)
+            if kind == "daily_limit":
+                st.exhausted[model] = self.clock() + seconds
+                notes.append(f"{st.label} used up its free daily limit for {model}.")
+                continue
+            notes.append(self._apply_failure(st, kind, msg, seconds))
+        if (any(s.status != "invalid" for s in states) and not self._model_usable(provider, model)
+                and self._switch_model(provider, model, notes)):
+            return "switch_model"
+        return "done"
+
     def complete(self, prompt, system="", providers=None, temperature=0.2, max_tokens=4096) -> LLMResult:
         order = [p for p in (providers or self.providers()) if p in self.keys]
         if not order:
@@ -347,38 +415,21 @@ class LLMRouter:
         notes = []
         for attempt in range(2):
             for provider in order:
-                states = self.keys[provider]
-                try:
-                    model = self.model_for(provider)
-                except AllKeysFailed as e:
-                    notes.extend(e.notes)
-                    continue
-                n = len(states)
-                for offset in range(n):
-                    idx = (self._cursor[provider] + offset) % n
-                    st = states[idx]
-                    if st.status == "invalid" or self._cooling(st) > 0:
-                        continue
-                    request = PROVIDERS[provider]["generate"](
-                        st.key, model, system, prompt, temperature, max_tokens)
-                    kind, resp, msg, cooldown = self._send(st, request)
-                    if kind == "ok":
-                        text = PROVIDERS[provider]["text"](_json(resp))
-                        if not text.strip():
-                            raise LLMRequestError(
-                                "The model returned an empty answer (it may have been blocked).")
-                        st.status = "ok"
-                        self._cursor[provider] = (idx + 1) % n
-                        if notes:
-                            notes.append(f"Answered by {st.label} using {model}.")
-                        return LLMResult(text, provider, model, st.label, notes)
-                    if kind == "bad_model":
-                        notes.append(f"The model '{model}' was not found for "
-                                     f"{PROVIDERS[provider]['label']}; trying the next provider.")
+                switches = 0
+                while True:
+                    try:
+                        model = self.model_for(provider)
+                    except AllKeysFailed as e:
+                        notes.extend(e.notes)
                         break
-                    if kind == "bad_request":
-                        raise LLMRequestError(msg)
-                    notes.append(self._apply_failure(st, kind, msg, cooldown))
+                    outcome = self._try_provider(provider, model, prompt, system,
+                                                 temperature, max_tokens, notes)
+                    if isinstance(outcome, LLMResult):
+                        return outcome
+                    if outcome == "switch_model" and switches < MAX_MODEL_SWITCHES:
+                        switches += 1
+                        continue
+                    break
             wait = self._soonest(order)
             if attempt == 0 and wait is not None and wait <= self.max_wait:
                 self.sleep(wait + 0.5)

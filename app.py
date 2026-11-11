@@ -66,8 +66,10 @@ def sidebar():
                                           key=f"model_{provider}")
             router.set_model(provider, choice)
         if len(router.keys) > 1:
-            router.primary = st.sidebar.radio("Try first", list(router.keys),
-                                              format_func=str.title, key="primary_provider")
+            order = list(router.keys)
+            router.primary = st.sidebar.radio("Try first", order, format_func=str.title,
+                                              index=order.index("groq") if "groq" in order else 0,
+                                              key="primary_provider")
     st.sidebar.caption("Use the Chat tab to edit the BOQ in plain words. Keys are only needed for the chat.")
     return uploaded
 

@@ -39,6 +39,8 @@ def printed_pages(page_texts) -> list:
 
 def page_label(pdf_page, printed) -> str:
     """'p.12' when the numbers agree, else 'PDF p.12 (printed p.9)'."""
+    if pdf_page is None:
+        return "page not located"
     if printed is None or printed == pdf_page:
         return f"p.{pdf_page}"
     return f"PDF p.{pdf_page} (printed p.{printed})"
@@ -126,6 +128,98 @@ def find_forms(page_texts, printed) -> list:
     return forms
 
 
+DATA_SECTION = re.compile(
+    r"bids? data sheet|\bbds\b|eligibility criteria|evaluation criteria|special conditions", re.I)
+DATA_BOOST = 1.6      # the facts live in the Bid Data Sheet and the eligibility tables
+DATA_SLOTS = 2        # at least this many such passages are offered to the AI when they match
+
+TOC_LINE = re.compile(r"^([A-Za-z][^\n]{2,100}?)\s+(\d{1,3})$")
+NOT_FORMS = re.compile(
+    r"annexure|manufacturer list|special provisions|\bboq\b|price schedule|scope of work|work specifications", re.I)
+FORM_WORDS = re.compile(
+    r"form|declaration|guarantee|undertaking|affidavit|certificate|pact|agreement|experience|key personnel|"
+    r"financial|turnover|litigation|net worth|letter", re.I)
+
+
+def _plain(text) -> str:
+    return re.sub(r"[^a-z0-9]+", " ", (text or "").lower()).strip()
+
+
+def toc_entries(page_texts, max_pages=5) -> list:
+    """Entries of the table of contents as (title, printed page number)."""
+    entries, seen, started = [], set(), False
+    for text in page_texts[:max_pages]:
+        lines = [" ".join(l.split()) for l in (text or "").splitlines()]
+        lines = [l for l in lines if l and not l.startswith(FOOTER_START)]
+        if not started:
+            if lines and lines[0].lower().startswith("table of contents"):
+                started = True
+            else:
+                continue
+        for line in lines:
+            if _plain(line) in seen:              # the body starts: a title repeated without a number
+                return entries
+            m = TOC_LINE.match(line)
+            if m and not re.match(r"^\d+\.", line) and len(m.group(1).split()) <= 14:
+                entries.append((m.group(1).strip(" :"), int(m.group(2))))
+                seen.add(_plain(m.group(1)))
+    return entries
+
+
+def _page_has(text, title) -> bool:
+    return _plain(title)[:30] in _plain(text)
+
+
+def _locate(title, page_texts, prefer, start=3):
+    """The PDF page where a titled part of the document really starts."""
+    if prefer and prefer <= len(page_texts) and _page_has(page_texts[prefer - 1], title):
+        return prefer
+    key = _plain(title)[:30]
+    for i in range(start, len(page_texts)):
+        for line in (page_texts[i] or "").splitlines():
+            if _plain(line).startswith(key):
+                return i + 1
+    return None
+
+
+def forms_from_toc(entries, page_texts, printed) -> list:
+    """The forms listed in the table of contents (the part after the Special Conditions)."""
+    start = next((i for i, (t, _) in enumerate(entries) if re.search(r"special conditions", t, re.I)), None)
+    chosen = entries[start + 1:] if start is not None else [e for e in entries if FORM_WORDS.search(e[0])]
+    pdf_for = {}
+    for pdf, pr in enumerate(printed, start=1):
+        if pr is not None:
+            pdf_for.setdefault(pr, pdf)
+    forms = []
+    for title, pr in chosen:
+        if NOT_FORMS.search(title):
+            continue
+        pdf = _locate(title, page_texts, pdf_for.get(pr) if pr > 1 else None)
+        forms.append({"label": title, "title": "", "pdf_page": pdf,
+                      "printed_page": printed[pdf - 1] if pdf else None, "source": "contents"})
+    return forms
+
+
+def merge_forms(toc_forms, heading_forms) -> list:
+    """Table-of-contents forms first; a 'Form 9: Title' heading adds its number to the same entry."""
+    def key(text):
+        return re.sub(r"[^a-z0-9]", "", (text or "").lower())
+
+    out = [dict(f) for f in toc_forms]
+    by_key = {key(f["label"]): f for f in out}
+    for h in heading_forms:
+        h = dict(h)
+        h.setdefault("source", "heading")
+        hit = by_key.get(key(h["title"] or h["label"]))
+        if hit is not None:
+            if h["title"]:
+                hit["title"], hit["label"] = hit["label"], h["label"]
+            continue
+        out.append(h)
+    out.sort(key=lambda f: (f["pdf_page"] is None, f["pdf_page"] or 0))
+    return out
+
+
 # ------------------------------------------------------------------ search
 def tokenize(text) -> list:
     out = []
@@ -197,9 +291,11 @@ class TenderIndex:
         self.page_texts = [t or "" for t in page_texts]
         self.printed = printed_pages(self.page_texts)
         self.passages = build_passages(self.page_texts, self.printed)
-        self.forms = find_forms(self.page_texts, self.printed)
+        toc = forms_from_toc(toc_entries(self.page_texts), self.page_texts, self.printed)
+        self.forms = merge_forms(toc, find_forms(self.page_texts, self.printed))
         self.searchable = [p for p in self.passages if p.section != TOC]
         self._bm25 = BM25([tokenize(p.section + " " + p.section + " " + p.text) for p in self.searchable])
+        self._is_data = [bool(DATA_SECTION.search(p.section)) for p in self.searchable]
 
     @property
     def n_pages(self) -> int:
@@ -210,5 +306,12 @@ class TenderIndex:
         for t in tokenize(expand_query(query)):
             weights.setdefault(t, 1.0)
         scores = self._bm25.scores(weights)
+        scores = [s * DATA_BOOST if self._is_data[i] else s for i, s in enumerate(scores)]
         order = sorted(range(len(scores)), key=lambda i: -scores[i])
-        return [self.searchable[i] for i in order[:k] if scores[i] > 0]
+        picked = [i for i in order[:k] if scores[i] > 0]
+        if sum(1 for i in picked if self._is_data[i]) < DATA_SLOTS:
+            extra = [i for i in order if scores[i] > 0 and self._is_data[i] and i not in picked]
+            add = extra[:DATA_SLOTS - sum(1 for i in picked if self._is_data[i])]
+            picked = picked[:max(0, k - len(add))] + add
+            picked.sort(key=lambda i: -scores[i])
+        return [self.searchable[i] for i in picked]

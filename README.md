@@ -69,3 +69,6 @@ Open `notebooks/colab_run.ipynb` in Colab and run the cells from top to bottom.
 
 Each person uses their own free LLM keys (Gemini, Groq). Keys stay in the browser
 session only and are never saved or committed.
+
+## License
+This project is licensed under the Apache License 2.0. See the [LICENSE](LICENSE) file for details.

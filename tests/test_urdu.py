@@ -72,7 +72,7 @@ def test_bad_answers_and_outages_do_not_crash():
     english = '{"translations":[{"n":1,"urdu":"still english"},{"n":2,"urdu":"اردو"}]}'
     stats, _ = translate_rows(rows, FakeRouter(english))
     assert stats["done"] == 1 and stats["failed"] == 1
-    stats, notes = translate_rows(t.items[:4], DownRouter(), batch_size=2)
+    stats, notes = translate_rows(t.items[4:8], DownRouter(), batch_size=2)     # four fresh rows
     assert stats["failed"] == 4 and stats["done"] == 0 and notes
 
 

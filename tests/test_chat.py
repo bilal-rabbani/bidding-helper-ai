@@ -113,7 +113,7 @@ def test_unclear_requests_are_not_executed():
 def test_other_intents():
     t, s = table_a()
     assert "API keys" in handle_message("x", t, s, FakeRouter('{"intent":"tender_question"}')).text
-    assert "phase 8" in handle_message("x", t, s, FakeRouter('{"intent":"translate"}')).text
+    assert "Which items" in handle_message("x", t, s, FakeRouter('{"intent":"translate"}')).text
     assert "cannot" in handle_message("x", t, s, FakeRouter('{"intent":"unsupported"}')).text
     rev = handle_message("x", t, s, FakeRouter('{"intent":"show_review"}'))
     assert rev.rows and rev.rows[0]["PDF page"] == 12

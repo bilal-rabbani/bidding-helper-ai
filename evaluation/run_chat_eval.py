@@ -117,6 +117,8 @@ def main():
         if chosen:
             router.set_model(name, chosen)
     router.primary = os.environ.get("PRIMARY") or None
+    import core.chat as chat_module
+    chat_module.DRY_RUN = True            # never really translate during the test
     table = parse_boq(ROOT / "tests" / "fixtures" / "tender_a_nust_boq.pdf").tables[0]
     session = EditSession(table)
 

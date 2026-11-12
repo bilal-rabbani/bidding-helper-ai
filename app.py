@@ -12,6 +12,7 @@ from core.boq_parser import parse_boq
 from core.chat_ui import chat_tab
 from core.tender_index import TenderIndex
 from core.tender_ui import tender_tab
+from core.urdu_ui import urdu_tab
 from core.excel_export import boq_excel_bytes
 from core.llm_router import LLMError, LLMRouter
 
@@ -251,8 +252,8 @@ def main():
     st.download_button("Download Excel (.xlsx)", data=boq_excel_bytes(result, st.session_state.file_name),
                        file_name=f"{stem}_BOQ.xlsx", mime=XLSX)
 
-    t0, t1, t2, t3, t4, t5 = st.tabs(["Chat", "BOQ", f"Needs review ({len(table.review_rows)})",
-                                      "Verification", "Edit rates", "Tender info"])
+    t0, t1, t2, t3, t4, t5, t6 = st.tabs(["Chat", "BOQ", f"Needs review ({len(table.review_rows)})",
+                                          "Verification", "Edit rates", "Tender info", "Urdu"])
     with t0:
         chat_tab(table, session, idx, st.session_state.router, st.session_state.file_name,
                  st.session_state.get("tender"))
@@ -267,6 +268,8 @@ def main():
     with t5:
         tender_tab(st.session_state.get("tender"), st.session_state.router,
                    st.session_state.file_name)
+    with t6:
+        urdu_tab(table, st.session_state.router)
 
 
 main()

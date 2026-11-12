@@ -14,6 +14,9 @@ from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
 from openpyxl.utils import get_column_letter
 from openpyxl.worksheet.properties import PageSetupProperties
 
+from core.settings import load_settings
+from core.urdu import urdu_check_for, urdu_for
+
 HEADERS = ["Sr. No", "Item No", "Description", "Unit", "Quantity",
            "Original Rate", "Rate", "Amount", "PDF page", "Review note"]
 WIDTHS = [7, 14, 70, 9, 12, 14, 14, 16, 9, 42]
@@ -249,6 +252,48 @@ def _write_summary(ws, tables, infos, names, source_name):
         r += 3
 
 
+URDU_HEADERS = ["Sr. No", "Item No", "Description (English)", "Description (Urdu)", "Unit", "Quantity", "Check"]
+URDU_WIDTHS = [7, 14, 55, 55, 9, 12, 38]
+
+
+def _write_urdu_sheet(ws, table, source_name):
+    """English and Urdu descriptions side by side; the Urdu is right-aligned and reads right to left."""
+    font_name = (load_settings().get("urdu") or {}).get("excel_font") or "Urdu Typesetting"
+    ws["A1"] = f"Item descriptions in Urdu - {table.job}"
+    ws["A1"].font = _font(bold=True, size=14)
+    ws["A2"] = f"Translated by AI - please check. Yellow rows have a note. Source: {source_name}"
+    ws["A2"].font = _font(italic=True, color="595959")
+    for c, (text, width) in enumerate(zip(URDU_HEADERS, URDU_WIDTHS), start=1):
+        cell = ws.cell(HEADER_ROW, c, text)
+        cell.font = _font(bold=True, color="FFFFFF")
+        cell.fill = FILL_HEADER
+        cell.border = BORDER
+        cell.alignment = Alignment(horizontal="center", vertical="center", wrap_text=True)
+        ws.column_dimensions[get_column_letter(c)].width = width
+    r = FIRST_DATA_ROW
+    for row in table.items:
+        urdu = urdu_for(row)
+        if not urdu:
+            continue
+        check = urdu_check_for(row)
+        values = [row.sr_no, row.item_no, row.description, urdu, row.unit, row.quantity, check]
+        for c, v in enumerate(values, start=1):
+            cell = ws.cell(r, c, v if v not in ("", None) else None)
+            cell.border = BORDER
+            cell.font = _font()
+            cell.alignment = Alignment(vertical="top", wrap_text=c in (3, 4, 7))
+            if check:
+                cell.fill = FILL_REVIEW
+        ws.cell(r, 1).alignment = Alignment(horizontal="center", vertical="top")
+        ws.cell(r, 6).number_format = NUMBER_FORMAT
+        ws.cell(r, 4).font = Font(name=font_name, size=14)
+        ws.cell(r, 4).alignment = Alignment(horizontal="right", vertical="top", wrap_text=True, readingOrder=2)
+        lines = max(1, math.ceil(len(row.description) / 55), math.ceil(len(urdu) / 32))
+        ws.row_dimensions[r].height = min(400, 24 * lines)
+        r += 1
+    ws.freeze_panes = "A5"
+
+
 def build_boq_workbook(result, source_name="tender.pdf"):
     """Return an openpyxl Workbook for a ParseResult."""
     if not result.tables:
@@ -261,6 +306,8 @@ def build_boq_workbook(result, source_name="tender.pdf"):
         ws.title = title
         infos.append(_write_boq_sheet(ws, table, source_name))
         names.append(title)
+        if any(urdu_for(r) for r in table.items):
+            _write_urdu_sheet(wb.create_sheet(f"{title} Urdu"), table, source_name)
     _write_summary(wb.create_sheet("Summary"), result.tables, infos, names, source_name)
     return wb
 

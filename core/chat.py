@@ -13,6 +13,7 @@ from core.boq_edit import (FIELDS, NUMERIC_FIELDS, OPS, EditCommand, Selector, _
                            _split_list)
 from core.llm_router import LLMError
 from core.tender_qa import answer_question, looks_like_tender_question
+from core.urdu import DEFAULT_GLOSSARY, parse_glossary, translate_rows, urdu_check_for, urdu_for
 
 MAX_ROWS_SHOWN = 15
 
@@ -25,7 +26,7 @@ HELP_TEXT = """I can work on the BOQ of the tender you uploaded. Try:
 - **Excel:** "give me the Excel file" (or use the Download button at the top)
 
 Every edit is shown as a preview first. Nothing changes until you press **Apply**.
-You can also ask about the tender, for example 'what is the bid security?' or 'what forms do I need?'. Urdu translation comes in a later phase."""
+You can also ask about the tender, for example 'what is the bid security?' or 'what forms do I need?'. Urdu: 'translate all descriptions into Urdu' or 'translate items 3 to 5 into Urdu'."""
 
 TENDER_Q_TEXT = ("To answer questions about the tender, I need the tender loaded and your API keys "
                  "added in the sidebar. Type **help** to see what else I can do.")
@@ -45,7 +46,7 @@ Choose "intent":
 - "download": wants the Excel file.
 - "help": asks what you can do.
 - "tender_question": asks about the tender's requirements, forms, dates, eligibility, securities or anything written in the tender text.
-- "translate": wants a translation (for example into Urdu).
+- "translate": wants the item descriptions translated into Urdu. Name the rows like for "edit" (sr_nos, item_nos, keywords, sections), or set "all": true for every item. If no rows are named and it is not "all", use "clarify".
 - "unsupported": wants something else (add or delete rows, change Sr. No, other files).
 - "clarify": ONLY when no rows are named at all, or the change or value is missing. Never use it when rows are named. Put one short question in "question".
 
@@ -77,6 +78,8 @@ Examples:
 "how many items are there and what is the total?" -> {"intent":"show_summary"}
 "increase the rates by 10%" -> {"intent":"clarify","question":"Which rows should the rates change for? Name Sr. Nos, Ref Nos, sections or words from the description."}
 "what forms must I submit?" -> {"intent":"tender_question"}
+"translate items 3 to 5 into urdu" -> {"intent":"translate","sr_nos":"3-5"}
+"translate all the descriptions into urdu" -> {"intent":"translate","all":true}
 "delete item 5" -> {"intent":"unsupported"}
 """
 
@@ -243,6 +246,38 @@ def _summary(table) -> ChatReply:
     return ChatReply("\n".join(lines), "info", intent="show_summary")
 
 
+DRY_RUN = False        # the chat evaluation sets this so a test never really translates
+
+
+def _translate_reply(data, table, router) -> ChatReply:
+    try:
+        selector = _selector(data, table)
+    except ValueError as e:
+        return ChatReply(str(e), "clarify", intent="clarify")
+    everything = bool(data.get("all"))
+    if selector.is_empty() and not everything:
+        return ChatReply("Which items should I translate into Urdu? Name Sr. Nos, sections or words from the "
+                         "description, or say 'all'.", "clarify", intent="clarify")
+    rows = table.items if everything else [r for r in table.items if selector.matches(r)]
+    if not rows:
+        return ChatReply("No item matches that.", "info", intent="translate")
+    if DRY_RUN or router is None:
+        return ChatReply(f"I would translate {len(rows)} description(s) into Urdu.", "info", intent="translate")
+    glossary = parse_glossary(getattr(table, "urdu_glossary", None) or DEFAULT_GLOSSARY)
+    stats, notes = translate_rows(rows, router, glossary)
+    text = f"Translated **{stats['done']}** of {stats['asked']} description(s) into Urdu."
+    if len(rows) > stats["asked"]:
+        text += f" {len(rows) - stats['asked']} already had a translation."
+    if stats["check"]:
+        text += f" **{stats['check']}** have a note (check them)."
+    if stats["failed"]:
+        text += f" {stats['failed']} could not be translated - please try again."
+    text += " The Excel download now has a 'BOQ Urdu' sheet; open the **Urdu** tab to read and correct them."
+    shown = [{"Sr. No": r.sr_no, "Urdu": urdu_for(r), "Check": urdu_check_for(r)}
+             for r in rows if urdu_for(r)][:MAX_ROWS_SHOWN]
+    return ChatReply(text, "info", rows=shown, notes=notes, intent="translate")
+
+
 def _tender_reply(text, tender, router) -> ChatReply:
     if tender is None or router is None:
         return ChatReply(TENDER_Q_TEXT, "info", intent="tender_question")
@@ -296,7 +331,7 @@ def route(data, table, session, tender=None, router=None, text="") -> ChatReply:
     if intent == "tender_question":
         return _tender_reply(text, tender, router)
     if intent == "translate":
-        return ChatReply(TRANSLATE_TEXT, "info", intent=intent)
+        return _translate_reply(data, table, router)
     if intent == "unsupported":
         return ChatReply(UNSUPPORTED_TEXT, "info", intent=intent)
     if intent == "clarify":
@@ -327,6 +362,10 @@ def reconcile(data, text, table) -> list:
             data["intent"] = intent = "show_review"
         elif _SUMMARY.search(text):
             data["intent"] = intent = "show_summary"
+    if intent == "translate" and not named and not data.get("all"):
+        if re.search(r"\b(all|every|whole|entire|descriptions|items)\b", text, re.I):
+            data["all"] = True
+            notes.append("I read this as: translate all items.")
     if intent == "edit":
         op = str(data.get("op") or "").strip().lower()
         has_pct, has_money = bool(_PERCENT.search(text)), bool(_MONEY_WORD.search(text))

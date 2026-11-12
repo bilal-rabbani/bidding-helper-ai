@@ -43,4 +43,4 @@ search:
   embedding_model: "intfloat/multilingual-e5-small"  # free, runs on CPU, handles Urdu
 
 urdu:
-  excel_font: "Jameel Noori Nastaleeq"
+  excel_font: "Urdu Typesetting"

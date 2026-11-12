@@ -12,5 +12,5 @@
 | 7 | OCR fallback | postponed to the end |
 | 8 | Urdu translation | done |
 | 9 | Supabase save and load | not started |
-| 10 | Deployment on Hugging Face Spaces | not started |
+| 10 | Deployment on Hugging Face Spaces | built, waiting for first deploy |
 | 11 | Hardening | not started |

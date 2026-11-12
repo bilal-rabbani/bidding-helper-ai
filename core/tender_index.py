@@ -135,7 +135,7 @@ DATA_SLOTS = 2        # at least this many such passages are offered to the AI w
 
 TOC_LINE = re.compile(r"^([A-Za-z][^\n]{2,100}?)\s+(\d{1,3})$")
 NOT_FORMS = re.compile(
-    r"annexure|manufacturer list|special provisions|\bboq\b|price schedule|scope of work|work specifications", re.I)
+    r"annexure|manufacturer list|special provisions|manual|appendices|additional instructions|additional special conditions|\bboq\b|price schedule|scope of work|work specifications", re.I)
 FORM_WORDS = re.compile(
     r"form|declaration|guarantee|undertaking|affidavit|certificate|pact|agreement|experience|key personnel|"
     r"financial|turnover|litigation|net worth|letter", re.I)

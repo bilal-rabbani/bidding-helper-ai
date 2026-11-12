@@ -1,0 +1,177 @@
+{
+ "status": "DRAFT - written from the text layer of the tenders; please verify against the PDF pages shown",
+ "tenders": {
+  "tender_a": {
+   "file": "bidding-document-4.pdf",
+   "label": "NUST C3A renovation",
+   "questions": [
+    {
+     "q": "How long must bids remain valid?",
+     "expect_any": [
+      "182"
+     ],
+     "pages": [
+      37
+     ]
+    },
+    {
+     "q": "What is the performance guarantee?",
+     "expect_any": [
+      "10"
+     ],
+     "pages": [
+      38
+     ]
+    },
+    {
+     "q": "What is the bid security and in what form is it paid?",
+     "expect_any": [
+      "2%",
+      "2 %"
+     ],
+     "pages": [
+      37,
+      40
+     ]
+    },
+    {
+     "q": "What is the tender fee?",
+     "expect_any": [
+      "3,000",
+      "3000"
+     ],
+     "pages": [
+      36,
+      40
+     ]
+    },
+    {
+     "q": "When will the bids be opened?",
+     "expect_any": [
+      "December 2, 2026",
+      "2 December 2026",
+      "02:00",
+      "2:00"
+     ],
+     "pages": [
+      4,
+      38
+     ]
+    }
+   ]
+  },
+  "tender_b": {
+   "file": "bidding-document-5.pdf",
+   "label": "JIAP public address rooms",
+   "questions": [
+    {
+     "q": "How long must bids remain valid?",
+     "expect_any": [
+      "120"
+     ],
+     "pages": [
+      37
+     ]
+    },
+    {
+     "q": "What is the performance guarantee?",
+     "expect_any": [
+      "0%",
+      "0 %",
+      "zero"
+     ],
+     "pages": [
+      38
+     ]
+    },
+    {
+     "q": "Which PEC registration category is required?",
+     "expect_any": [
+      "C-6"
+     ],
+     "pages": [
+      40
+     ]
+    },
+    {
+     "q": "When will the bids be opened?",
+     "expect_any": [
+      "November 10, 2026",
+      "10 November 2026",
+      "11:00"
+     ],
+     "pages": [
+      5
+     ]
+    },
+    {
+     "q": "In what form can the bid security be paid?",
+     "expect_any": [
+      "Pay Order"
+     ],
+     "pages": [
+      37,
+      40
+     ]
+    }
+   ]
+  },
+  "tender_c": {
+   "file": "bidding-document-6.pdf",
+   "label": "PIDCL 50 kW solar",
+   "questions": [
+    {
+     "q": "How long must bids remain valid?",
+     "expect_any": [
+      "90"
+     ],
+     "pages": [
+      36
+     ]
+    },
+    {
+     "q": "What is the performance guarantee?",
+     "expect_any": [
+      "10"
+     ],
+     "pages": [
+      37
+     ]
+    },
+    {
+     "q": "Which PEC registration category is required?",
+     "expect_any": [
+      "C-6"
+     ],
+     "pages": [
+      39
+     ]
+    },
+    {
+     "q": "Which specialization code is required on the PEC license?",
+     "expect_any": [
+      "EE-11"
+     ],
+     "pages": [
+      39
+     ]
+    },
+    {
+     "q": "When will the bids be opened?",
+     "expect_any": [
+      "November 10, 2026",
+      "10 November 2026",
+      "11:00"
+     ],
+     "pages": [
+      4
+     ]
+    }
+   ]
+  }
+ },
+ "negative": [
+  "What is the favourite colour of the procurement officer?",
+  "How many camels does the contractor have to supply?"
+ ]
+}

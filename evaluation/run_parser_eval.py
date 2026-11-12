@@ -53,6 +53,8 @@ def evaluate():
                verif_ok=0, verif_n=0, sec_ok=0, sec_n=0, flagged=0)
     for gold_file in sorted(GOLD.glob("*.json")):
         gold = json.loads(gold_file.read_text(encoding="utf-8"))
+        if "tables" not in gold:
+            continue            # e.g. the tender question file belongs to another evaluation
         pdf = FIXTURES / (gold_file.stem + ".pdf")
         result = parse_boq(pdf)
         for ti, gt in enumerate(gold["tables"]):

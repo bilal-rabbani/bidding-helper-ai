@@ -471,6 +471,7 @@ def parse_boq(pdf_path) -> ParseResult:
                 no_text.append(i)
             tables = page.extract_tables() if text.strip() else []
             pages.append({"page": i, "text": text, "tables": tables})
+            page.close()
     result = parse_boq_tables(pages)
     result.page_texts = [pg["text"] for pg in pages]
     if no_text:

@@ -21,4 +21,5 @@ def read_pages(path) -> list:
         for i, page in enumerate(doc.pages, start=1):
             text = page.extract_text() or ""
             pages.append(PageText(i, text, len(text.strip()) >= MIN_CHARS_FOR_TEXT_LAYER))
+            page.close()
     return pages

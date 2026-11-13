@@ -471,6 +471,8 @@ def parse_boq(pdf_path) -> ParseResult:
                 no_text.append(i)
             tables = page.extract_tables() if text.strip() else []
             pages.append({"page": i, "text": text, "tables": tables})
+            if hasattr(page, "flush_cache"):
+                page.flush_cache()          # free the memory of this page
             page.close()
     result = parse_boq_tables(pages)
     result.page_texts = [pg["text"] for pg in pages]

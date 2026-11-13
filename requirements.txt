@@ -4,5 +4,5 @@ pdfplumber>=0.11
 pillow<13
 openpyxl>=3.1
 requests>=2.31
-streamlit>=1.40
+streamlit==1.67.0
 pandas>=2.0

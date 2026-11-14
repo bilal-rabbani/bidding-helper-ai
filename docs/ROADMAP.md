@@ -2,15 +2,15 @@
 
 | # | Phase | Status |
 |---|---|---|
-| 0 | Setup (repo, tests, settings, Colab notebook) | done |
-| 1 | PDF reader, BOQ parser and parser evaluation | built, waiting for spot check of gold data |
+| 0 | Setup (repository, tests, settings) | done |
+| 1 | PDF reader, BOQ parser and parser evaluation | done |
 | 2 | Excel export | done |
-| 3 | Row selection and rate editor | not started |
-| 4 | Streamlit app shell, API keys, key rotation | done |
-| 5 | Chat and BOQ editing | done |
-| 6 | Tender search (requirements, forms, dates) | not started |
-| 7 | OCR fallback | postponed to the end |
+| 3 | Row selection and rate editor | done |
+| 4 | Streamlit app, API keys, key rotation | done |
+| 5 | Chat that edits the BOQ | done |
+| 6 | Tender questions, key facts, forms, page citations | done |
+| 7 | OCR for scanned tenders | postponed to the end |
 | 8 | Urdu translation | done |
-| 9 | Supabase save and load | not started |
-| 10 | Deployment on Hugging Face Spaces | built, waiting for first deploy |
-| 11 | Hardening | not started |
+| 9 | Saving work | done as a session file (no accounts); accounts only if people ask for them |
+| 10 | Deployment | done on Streamlit Community Cloud |
+| 11 | Final checks, user guide, known limits | done |

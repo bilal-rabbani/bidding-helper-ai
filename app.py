@@ -23,6 +23,7 @@ from core.app_helpers import (OPERATIONS, build_command, fmt, items_frame, revie
 from core.boq_edit import NUMERIC_FIELDS, EditSession, Selector, StalePlanError
 from core.boq_parser import parse_boq
 from core.chat_ui import chat_tab
+from core.help_ui import help_tab
 from core.session_ui import session_sidebar
 from core.tender_index import TenderIndex
 from core.tender_ui import tender_tab
@@ -49,8 +50,7 @@ def sidebar():
         st.session_state.file_id = None
 
     st.sidebar.header("2. API keys")
-    st.sidebar.caption("Free keys from Gemini and Groq. Put several keys in one box, separated "
-                       "by commas. Keys stay in this browser session only and are never saved.")
+    st.sidebar.caption("Free keys: Groq at console.groq.com/keys, Gemini at aistudio.google.com/apikey (see the Help tab). Put several keys in one box, separated by commas. Keys stay in this browser session only and are never saved.")
     gemini = st.sidebar.text_input("Gemini keys", type="password", key="gemini_keys")
     groq = st.sidebar.text_input("Groq keys", type="password", key="groq_keys")
     if st.sidebar.button("Use and test keys"):
@@ -243,7 +243,8 @@ def main():
 
     result = st.session_state.result
     if result is None:
-        st.info("Upload a tender PDF in the sidebar to begin.")
+        st.info("Upload a tender PDF in the sidebar to begin, or continue from a session file.")
+        help_tab()
         return
     for w in result.warnings:
         st.warning(w)
@@ -267,8 +268,8 @@ def main():
     st.download_button("Download Excel (.xlsx)", data=boq_excel_bytes(result, st.session_state.file_name),
                        file_name=f"{stem}_BOQ.xlsx", mime=XLSX)
 
-    t0, t1, t2, t3, t4, t5, t6 = st.tabs(["Chat", "BOQ", f"Needs review ({len(table.review_rows)})",
-                                          "Verification", "Edit rates", "Tender info", "Urdu"])
+    t0, t1, t2, t3, t4, t5, t6, t7 = st.tabs(["Chat", "BOQ", f"Needs review ({len(table.review_rows)})",
+                                              "Verification", "Edit rates", "Tender info", "Urdu", "Help"])
     with t0:
         chat_tab(table, session, idx, st.session_state.router, st.session_state.file_name,
                  st.session_state.get("tender"))
@@ -285,6 +286,8 @@ def main():
                    st.session_state.file_name)
     with t6:
         urdu_tab(table, st.session_state.router)
+    with t7:
+        help_tab()
 
 
 main()

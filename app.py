@@ -23,6 +23,7 @@ from core.app_helpers import (OPERATIONS, build_command, fmt, items_frame, revie
 from core.boq_edit import NUMERIC_FIELDS, EditSession, Selector, StalePlanError
 from core.boq_parser import parse_boq
 from core.chat_ui import chat_tab
+from core.session_ui import session_sidebar
 from core.tender_index import TenderIndex
 from core.tender_ui import tender_tab
 from core.urdu_ui import urdu_tab
@@ -87,6 +88,7 @@ def sidebar():
                                               index=order.index("groq") if "groq" in order else 0,
                                               key="primary_provider")
     st.sidebar.caption("Use the Chat tab to edit the BOQ in plain words. Keys are only needed for the chat.")
+    session_sidebar(uploaded)
     return uploaded
 
 
